@@ -8,7 +8,7 @@ services:
       - "8000:3000"
     volumes:
       - .:/root/tutorial-app
-    command: /bin/bash -c "source /usr/local/rvm/scripts/rvm && tail -f /dev/null"
+    command: /bin/bash -c "source /usr/local/rvm/scripts/rvm && bundle install && rails s -b 0.0.0.0 -p 3000"
     working_dir: /root/tutorial-app/crud-rails-react
     stdin_open: true
     tty: true
