@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  web-app:
+    build:
+      context: ./Dockerfile
+      dockerfile: rails-dev-env
+    ports:
+      - "8000:3000"
+    volumes:
+      - .:/root/tutorial-app
+    command: /bin/bash -c "source /usr/local/rvm/scripts/rvm && tail -f /dev/null"
+    working_dir: /root/tutorial-app/crud-rails-react
+    stdin_open: true
+    tty: true
+    depends_on:
+      - database
+
+  database:
+    image:
+      mysql:5.7
+    volumes:
+      - mysql-database:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+volumes:
+  mysql-database:
