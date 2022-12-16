@@ -1,10 +1,8 @@
-## This file is created by following this link https://gorails.com/setup/ubuntu/20.04#ruby-rvm
-
-#Pull Ubuntu 20.04 image from docker hub
+#Pull ubuntu 20.04 from docker hub --> Dec 2022, cannot upgrade to ubuntu 22.04 due to RVM library dependency (openssl v 1.0)
 FROM ubuntu:20.04
 
-#update and upgrade the image and set timezone
-RUN apt update && apt -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata curl
+#update and upgrade the image and then set timezone
+RUN apt -y update && apt -y upgrade && apt install -y curl tzdata
 
 ENV TZ=Asia/Bangkok
 
@@ -12,22 +10,21 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
-#Add extra ubuntu repository to download additional libraries
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+#Add curl to download extra libraries
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
-#Update apt repository list
-RUN apt update
-
 #Install additional libraries
-RUN apt install -y git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn libgdbm-dev libncurses5-dev automake libtool bison libffi-dev \
-    vim nano libmysqlclient-dev
+RUN apt -y install git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev  \
+    libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common  \
+    libffi-dev nodejs yarn openssl libmysqlclient-dev mysql-client mysql-server vim nano
 
 #Add RVM (Ruby Version Manager) repository key
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+
 
 RUN curl -sSL https://get.rvm.io | bash -s stable
 
@@ -36,4 +33,3 @@ RUN cd root/
 RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && cd /root && rvm install 2.6.7 && rvm use 2.6.7 --default && gem install bundler && gem install rails -v 5.1.0"
 
 WORKDIR root/
-

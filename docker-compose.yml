@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/root/tutorial-app
     command: /bin/bash -c "source /usr/local/rvm/scripts/rvm && tail -f /dev/null"
-    working_dir: /root/tutorial-app
+    working_dir: /root/app
     stdin_open: true
     tty: true
     depends_on:
