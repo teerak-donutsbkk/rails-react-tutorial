@@ -30,6 +30,6 @@ RUN curl -sSL https://get.rvm.io | bash -s stable
 
 RUN cd root/
 
-RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && cd /root && rvm install 2.6.7 && rvm use 2.6.7 --default && gem install bundler && gem install rails -v 5.1.0"
+RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && cd /root && rvm install 3.0.0 && rvm use 3.0.0 --default && gem install bundler && gem install rails -v 7.0.4"
 
 WORKDIR root/
