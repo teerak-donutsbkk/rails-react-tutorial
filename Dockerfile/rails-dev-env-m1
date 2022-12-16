@@ -1,0 +1,39 @@
+#Pull ubuntu 20.04 from docker hub --> Dec 2022, cannot upgrade to ubuntu 22.04 due to RVM library dependency (openssl v 1.0)
+FROM arm64v8/ubuntu:20.04
+
+#update and upgrade the image and then set timezone
+RUN apt -y update && apt -y upgrade && apt install -y curl tzdata
+
+ENV TZ=Asia/Bangkok
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
+#Add curl to download extra libraries
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
+#Install additional libraries
+RUN apt -y install git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev  \
+    libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common  \
+    libffi-dev nodejs yarn openssl libmysqlclient-dev mysql-client mysql-server vim nano
+
+#Add RVM (Ruby Version Manager) repository key
+RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+
+
+RUN curl -sSL https://get.rvm.io | bash -s stable
+
+RUN useradd -ms /bin/bash deploy
+
+WORKDIR /home/deploy
+
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+RUN /bin/bash -c 'echo "source /usr/local/rvm/scripts/rvm" | tee -a ~/.bashrc'
+
+RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && rvm install 3.0.0 && rvm use 3.0.0 --default && gem install bundler && gem install rails -v 7.0.4"
