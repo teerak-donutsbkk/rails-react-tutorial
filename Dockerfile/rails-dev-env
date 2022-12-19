@@ -28,8 +28,12 @@ RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
 
 RUN curl -sSL https://get.rvm.io | bash -s stable
 
-RUN cd root/
+RUN useradd -ms /bin/bash deploy
 
-RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && cd /root && rvm install 3.0.0 && rvm use 3.0.0 --default && gem install bundler && gem install rails -v 7.0.4"
+WORKDIR /home/deploy
 
-WORKDIR root/
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+RUN /bin/bash -c 'echo "source /usr/local/rvm/scripts/rvm" | tee -a ~/.bashrc'
+
+RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && rvm install 3.0.0 && rvm use 3.0.0 --default && gem install bundler && gem install rails -v 7.0.4"
